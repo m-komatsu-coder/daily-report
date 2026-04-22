@@ -1,0 +1,597 @@
+
+<style>
+:root {
+  --brand: #1a3a5c;
+  --brand-mid: #2563a8;
+  --brand-light: #e8f0fb;
+  --accent: #e07b2a;
+  --accent-light: #fef3e8;
+  --ok: #1d9e75;
+  --ok-light: #e1f5ee;
+  --warn: #ba7517;
+  --warn-light: #faeeda;
+  --gray: #5f5e5a;
+  --gray-light: #f1efe8;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans, sans-serif); }
+
+#app { width: 100%; }
+
+.tab-bar {
+  display: flex;
+  border-bottom: 0.5px solid var(--color-border-tertiary);
+  margin-bottom: 1.5rem;
+  gap: 0;
+}
+.tab-btn {
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 500;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s;
+}
+.tab-btn.active {
+  color: var(--brand-mid);
+  border-bottom: 2px solid var(--brand-mid);
+}
+
+.screen { display: none; }
+.screen.active { display: block; }
+
+/* ===== FORM SCREEN ===== */
+.form-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 1.5rem;
+}
+.form-header-icon {
+  width: 36px; height: 36px;
+  background: var(--brand-mid);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+  font-size: 16px;
+}
+.form-header h2 {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+.form-header span {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  margin-left: auto;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.form-group.full { grid-column: 1 / -1; }
+.form-group label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.03em;
+}
+.form-group label .req {
+  color: #e24b4a;
+  margin-left: 3px;
+}
+.form-group input,
+.form-group select,
+.form-group textarea {
+  border: 0.5px solid var(--color-border-secondary);
+  border-radius: var(--border-radius-md);
+  padding: 8px 10px;
+  font-size: 14px;
+  background: var(--color-background-primary);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans, sans-serif);
+}
+.form-group textarea { resize: vertical; min-height: 80px; }
+
+.status-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.status-chip {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 0.5px solid var(--color-border-tertiary);
+  background: var(--color-background-secondary);
+  color: var(--color-text-secondary);
+  transition: all 0.12s;
+}
+.status-chip.sel-initial { background: var(--brand-light); color: var(--brand-mid); border-color: var(--brand-mid); }
+.status-chip.sel-negotiating { background: var(--warn-light); color: var(--warn); border-color: var(--warn); }
+.status-chip.sel-quote { background: var(--accent-light); color: var(--accent); border-color: var(--accent); }
+.status-chip.sel-order { background: var(--ok-light); color: var(--ok); border-color: var(--ok); }
+.status-chip.sel-lost { background: #fcebeb; color: #a32d2d; border-color: #a32d2d; }
+
+.photo-drop {
+  border: 1px dashed var(--color-border-secondary);
+  border-radius: var(--border-radius-md);
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  background: var(--color-background-secondary);
+  transition: background 0.12s;
+}
+.photo-drop:hover { background: var(--brand-light); }
+.photo-previews {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.photo-thumb {
+  width: 60px; height: 60px;
+  border-radius: 6px;
+  background: var(--color-background-secondary);
+  border: 0.5px solid var(--color-border-tertiary);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  overflow: hidden;
+  position: relative;
+}
+.photo-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+.submit-btn {
+  width: 100%;
+  padding: 12px;
+  background: var(--brand-mid);
+  color: #fff;
+  border: none;
+  border-radius: var(--border-radius-md);
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background 0.12s;
+}
+.submit-btn:hover { background: var(--brand); }
+
+.toast {
+  display: none;
+  position: relative;
+  margin-top: 12px;
+  padding: 12px 16px;
+  background: var(--ok-light);
+  border: 0.5px solid var(--ok);
+  border-radius: var(--border-radius-md);
+  color: var(--ok);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* ===== LIST SCREEN ===== */
+.list-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 1rem;
+}
+.list-top input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 0.5px solid var(--color-border-secondary);
+  border-radius: 20px;
+  font-size: 13px;
+  background: var(--color-background-primary);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans, sans-serif);
+}
+.list-top select {
+  padding: 7px 10px;
+  border: 0.5px solid var(--color-border-secondary);
+  border-radius: var(--border-radius-md);
+  font-size: 12px;
+  background: var(--color-background-primary);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans, sans-serif);
+}
+
+.report-card {
+  background: var(--color-background-primary);
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: var(--border-radius-lg);
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: border-color 0.12s;
+}
+.report-card:hover { border-color: var(--brand-mid); }
+.report-card-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.report-date {
+  background: var(--brand-light);
+  color: var(--brand-mid);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.report-site {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  flex: 1;
+}
+.status-badge {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 9px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+.s-initial { background: var(--brand-light); color: var(--brand-mid); }
+.s-negotiating { background: var(--warn-light); color: var(--warn); }
+.s-quote { background: var(--accent-light); color: var(--accent); }
+.s-order { background: var(--ok-light); color: var(--ok); }
+.s-lost { background: #fcebeb; color: #a32d2d; }
+
+.report-body {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+.report-meta {
+  display: flex;
+  gap: 12px;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+}
+.report-meta .amount { color: var(--accent); font-weight: 500; }
+
+/* ===== ADMIN SCREEN ===== */
+.admin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+  margin-bottom: 1.5rem;
+}
+.metric-card {
+  background: var(--color-background-secondary);
+  border-radius: var(--border-radius-md);
+  padding: 14px 16px;
+}
+.metric-label { font-size: 11px; color: var(--color-text-secondary); margin-bottom: 4px; }
+.metric-val { font-size: 22px; font-weight: 500; color: var(--color-text-primary); }
+.metric-sub { font-size: 11px; color: var(--color-text-secondary); margin-top: 2px; }
+
+.member-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.member-table th {
+  text-align: left;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  padding: 8px 10px;
+  border-bottom: 0.5px solid var(--color-border-tertiary);
+}
+.member-table td {
+  padding: 10px;
+  border-bottom: 0.5px solid var(--color-border-tertiary);
+  color: var(--color-text-primary);
+}
+.member-table tr:last-child td { border-bottom: none; }
+.progress-bar-wrap {
+  background: var(--color-background-secondary);
+  border-radius: 4px;
+  height: 6px;
+  width: 100px;
+  overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: var(--brand-mid);
+}
+</style>
+
+<h2 class="sr-only">建設業向け営業日報管理アプリのデモ</h2>
+
+<div id="app">
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('form')">日報入力</button>
+    <button class="tab-btn" onclick="switchTab('list')">日報一覧</button>
+    <button class="tab-btn" onclick="switchTab('admin')">管理者ダッシュボード</button>
+  </div>
+
+  <!-- FORM -->
+  <div id="screen-form" class="screen active">
+    <div class="form-header">
+      <div class="form-header-icon">📋</div>
+      <h2>営業日報</h2>
+      <span id="today-label"></span>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label>日付<span class="req">*</span></label>
+        <input type="date" id="f-date">
+      </div>
+      <div class="form-group">
+        <label>担当者<span class="req">*</span></label>
+        <select id="f-member">
+          <option>山田 太郎</option>
+          <option>鈴木 花子</option>
+          <option>田中 一郎</option>
+          <option>佐藤 美咲</option>
+        </select>
+      </div>
+      <div class="form-group full">
+        <label>訪問先・現場名<span class="req">*</span></label>
+        <input type="text" id="f-site" placeholder="例：〇〇建設 名古屋支店 / △△マンション新築現場">
+      </div>
+      <div class="form-group full">
+        <label>商談内容・進捗</label>
+        <textarea id="f-content" placeholder="今日の商談内容、先方の反応、課題など"></textarea>
+      </div>
+      <div class="form-group full">
+        <label>進捗ステータス</label>
+        <div class="status-row" id="status-row">
+          <div class="status-chip sel-initial" data-val="initial" onclick="selectStatus(this)">初回訪問</div>
+          <div class="status-chip" data-val="negotiating" onclick="selectStatus(this)">商談中</div>
+          <div class="status-chip" data-val="quote" onclick="selectStatus(this)">見積提出</div>
+          <div class="status-chip" data-val="order" onclick="selectStatus(this)">受注</div>
+          <div class="status-chip" data-val="lost" onclick="selectStatus(this)">失注</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>見積金額（円）</label>
+        <input type="text" id="f-quote" placeholder="例：3,500,000">
+      </div>
+      <div class="form-group">
+        <label>受注金額（円）</label>
+        <input type="text" id="f-order" placeholder="受注確定時のみ">
+      </div>
+      <div class="form-group full">
+        <label>現場写真</label>
+        <div class="photo-drop" onclick="document.getElementById('f-photo').click()">
+          タップして写真を追加（現場・資料など）
+        </div>
+        <input type="file" id="f-photo" accept="image/*" multiple style="display:none" onchange="addPhotos(this)">
+        <div class="photo-previews" id="photo-previews"></div>
+      </div>
+      <div class="form-group full">
+        <label>翌日の予定</label>
+        <textarea id="f-next" placeholder="明日の訪問先・準備事項など" style="min-height:60px"></textarea>
+      </div>
+    </div>
+
+    <button class="submit-btn" onclick="submitReport()">日報を提出する</button>
+    <div class="toast" id="toast">日報を提出しました！</div>
+  </div>
+
+  <!-- LIST -->
+  <div id="screen-list" class="screen">
+    <div class="list-top">
+      <input type="text" placeholder="現場名・担当者で検索..." id="search-input" oninput="filterReports()">
+      <select id="filter-status" onchange="filterReports()">
+        <option value="">すべて</option>
+        <option value="initial">初回訪問</option>
+        <option value="negotiating">商談中</option>
+        <option value="quote">見積提出</option>
+        <option value="order">受注</option>
+        <option value="lost">失注</option>
+      </select>
+    </div>
+    <div id="report-list"></div>
+  </div>
+
+  <!-- ADMIN -->
+  <div id="screen-admin" class="screen">
+    <div class="admin-grid">
+      <div class="metric-card">
+        <div class="metric-label">今月の日報件数</div>
+        <div class="metric-val">47</div>
+        <div class="metric-sub">先月比 +8件</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">商談中案件</div>
+        <div class="metric-val">12</div>
+        <div class="metric-sub">うち見積提出 5件</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">今月受注金額</div>
+        <div class="metric-val">¥38M</div>
+        <div class="metric-sub">目標比 76%</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">受注率</div>
+        <div class="metric-val">34%</div>
+        <div class="metric-sub">業界平均 28%</div>
+      </div>
+    </div>
+
+    <div style="font-size:12px;font-weight:500;color:var(--color-text-secondary);margin-bottom:10px;">メンバー別 今月の活動状況</div>
+    <div style="background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;">
+      <table class="member-table">
+        <thead>
+          <tr>
+            <th>担当者</th>
+            <th>日報</th>
+            <th>訪問数</th>
+            <th>受注金額</th>
+            <th>目標達成</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>山田 太郎</td>
+            <td>15</td>
+            <td>22</td>
+            <td>¥12.4M</td>
+            <td>
+              <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:83%;background:var(--ok)"></div></div>
+            </td>
+          </tr>
+          <tr>
+            <td>鈴木 花子</td>
+            <td>13</td>
+            <td>18</td>
+            <td>¥9.8M</td>
+            <td>
+              <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:65%"></div></div>
+            </td>
+          </tr>
+          <tr>
+            <td>田中 一郎</td>
+            <td>10</td>
+            <td>14</td>
+            <td>¥8.2M</td>
+            <td>
+              <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:55%;background:var(--warn)"></div></div>
+            </td>
+          </tr>
+          <tr>
+            <td>佐藤 美咲</td>
+            <td>9</td>
+            <td>12</td>
+            <td>¥7.6M</td>
+            <td>
+              <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:50%;background:var(--warn)"></div></div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+const SAMPLE_REPORTS = [
+  { date:"2026-04-22", member:"山田 太郎", site:"〇〇建設 名古屋本社", content:"外壁塗装案件の追加提案。先方担当者の反応は良好。価格交渉が必要。", status:"negotiating", quote:"4,500,000", order:"", next:"見積書修正版を提出予定" },
+  { date:"2026-04-21", member:"鈴木 花子", site:"△△マンション新築現場（春日井）", content:"現場確認と資材確認。施工会社との打ち合わせ完了。追加工事の可能性あり。", status:"quote", quote:"2,200,000", order:"", next:"施工スケジュール確認" },
+  { date:"2026-04-21", member:"田中 一郎", site:"◇◇工務店 豊田支店", content:"初回訪問。担当の加藤部長と面談。リノベーション案件の相談あり。", status:"initial", quote:"", order:"", next:"資料送付・再訪問調整" },
+  { date:"2026-04-20", member:"山田 太郎", site:"★★ハウス 刈谷営業所", content:"受注確定。契約書サイン完了。着工は来月予定。", status:"order", quote:"6,800,000", order:"6,500,000", next:"工程表の作成・手配" },
+  { date:"2026-04-19", member:"佐藤 美咲", site:"●●産業 安城倉庫", content:"屋根防水工事の提案。競合他社も入っており価格勝負になりそう。", status:"negotiating", quote:"3,100,000", order:"", next:"競合情報収集" },
+];
+
+let allReports = [...SAMPLE_REPORTS];
+let selectedStatus = "initial";
+
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach((b,i) => {
+    b.classList.toggle('active', ['form','list','admin'][i] === name);
+  });
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+  if (name === 'list') renderList(allReports);
+}
+
+const statusLabel = { initial:"初回訪問", negotiating:"商談中", quote:"見積提出", order:"受注", lost:"失注" };
+const statusClass = { initial:"s-initial", negotiating:"s-negotiating", quote:"s-quote", order:"s-order", lost:"s-lost" };
+
+function renderList(reports) {
+  const el = document.getElementById('report-list');
+  if (!reports.length) { el.innerHTML = '<p style="color:var(--color-text-secondary);font-size:13px;padding:20px 0;">該当する日報がありません</p>'; return; }
+  el.innerHTML = reports.map(r => `
+    <div class="report-card">
+      <div class="report-card-top">
+        <span class="report-date">${r.date.replace(/-/g,'/')}</span>
+        <span class="report-site">${r.site}</span>
+        <span class="status-badge ${statusClass[r.status]}">${statusLabel[r.status]}</span>
+      </div>
+      <div class="report-body">${r.content}</div>
+      <div class="report-meta">
+        <span>${r.member}</span>
+        ${r.quote ? `<span>見積：<span class="amount">¥${Number(r.quote).toLocaleString()}</span></span>` : ''}
+        ${r.order ? `<span>受注：<span class="amount">¥${Number(r.order).toLocaleString()}</span></span>` : ''}
+        ${r.next ? `<span>明日：${r.next}</span>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterReports() {
+  const q = document.getElementById('search-input').value.toLowerCase();
+  const s = document.getElementById('filter-status').value;
+  renderList(allReports.filter(r =>
+    (!q || r.site.toLowerCase().includes(q) || r.member.toLowerCase().includes(q)) &&
+    (!s || r.status === s)
+  ));
+}
+
+function selectStatus(el) {
+  document.querySelectorAll('.status-chip').forEach(c => {
+    c.className = 'status-chip';
+  });
+  selectedStatus = el.dataset.val;
+  el.classList.add('sel-'+selectedStatus);
+}
+
+function addPhotos(input) {
+  const previews = document.getElementById('photo-previews');
+  Array.from(input.files).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const div = document.createElement('div');
+      div.className = 'photo-thumb';
+      div.innerHTML = `<img src="${e.target.result}" alt="現場写真">`;
+      previews.appendChild(div);
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function submitReport() {
+  const site = document.getElementById('f-site').value.trim();
+  const member = document.getElementById('f-member').value;
+  const date = document.getElementById('f-date').value;
+  if (!site) { document.getElementById('f-site').focus(); return; }
+  allReports.unshift({
+    date, member, site,
+    content: document.getElementById('f-content').value || '（内容なし）',
+    status: selectedStatus,
+    quote: document.getElementById('f-quote').value.replace(/,/g,''),
+    order: document.getElementById('f-order').value.replace(/,/g,''),
+    next: document.getElementById('f-next').value
+  });
+  const toast = document.getElementById('toast');
+  toast.style.display = 'block';
+  setTimeout(() => toast.style.display = 'none', 3000);
+  document.getElementById('f-site').value = '';
+  document.getElementById('f-content').value = '';
+  document.getElementById('f-next').value = '';
+  document.getElementById('f-quote').value = '';
+  document.getElementById('f-order').value = '';
+  document.getElementById('photo-previews').innerHTML = '';
+}
+
+// init
+const d = new Date();
+document.getElementById('f-date').value = d.toISOString().split('T')[0];
+document.getElementById('today-label').textContent = `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`;
+</script>
